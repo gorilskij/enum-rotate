@@ -1,6 +1,6 @@
-use enum_rotate::RotateEnum;
+use enum_rotate::EnumRotate;
 
-#[derive(RotateEnum, Copy, Clone, Eq, PartialEq, Debug)]
+#[derive(EnumRotate, Copy, Clone, Eq, PartialEq, Debug)]
 enum Test {
     A, B, C
 }

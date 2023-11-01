@@ -1,8 +1,8 @@
 extern crate self as enum_rotate;
 
-pub use derive_enum_rotate::RotateEnum;
+pub use derive_enum_rotate::EnumRotate;
 
-pub trait RotateEnum where Self: Sized + Copy {
+pub trait EnumRotate where Self: Sized + Copy {
     fn next(self) -> Self;
 
     fn prev(self) -> Self;
