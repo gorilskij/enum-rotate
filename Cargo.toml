@@ -5,4 +5,3 @@ edition = "2021"
 
 [dependencies]
 derive_enum_rotate = { path = "../derive_enum_rotate" }
-delegate = "0.12.0"

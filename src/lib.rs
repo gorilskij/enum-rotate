@@ -1,96 +1,128 @@
 extern crate self as enum_rotate;
 
-use delegate::delegate;
 pub use derive_enum_rotate::EnumRotate;
-use std::cmp::Ordering;
-use std::iter::{Product, Sum};
-use std::vec;
+use std::iter::successors;
+use std::mem::discriminant;
 
-pub struct Iter<E>(vec::IntoIter<E>);
-
-impl<E> Iter<E> {
-    pub fn new(vec: Vec<E>) -> Self {
-        Self(vec.into_iter())
-    }
-}
-
-impl<E> Iterator for Iter<E> {
-    type Item = E;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        self.0.next()
-    }
-
-    delegate! {
-        to self.0 {
-            fn size_hint(&self) -> (usize, Option<usize>);
-            fn all<F>(&mut self, f: F) -> bool where Self: Sized, F: FnMut(Self::Item) -> bool;
-            fn any<F>(&mut self, f: F) -> bool where Self: Sized, F: FnMut(Self::Item) -> bool;
-            fn cmp<I>(self, other: I) -> Ordering where I: IntoIterator<Item=Self::Item>, Self::Item: Ord, Self: Sized;
-            fn collect<B: FromIterator<Self::Item>>(self) -> B where Self: Sized;
-            fn count(self) -> usize where Self: Sized;
-            fn eq<I>(self, other: I) -> bool where I: IntoIterator, Self::Item: PartialEq<I::Item>, Self: Sized;
-            fn find<P>(&mut self, predicate: P) -> Option<Self::Item> where Self: Sized, P: FnMut(&Self::Item) -> bool;
-            fn find_map<B, F>(&mut self, f: F) -> Option<B> where Self: Sized, F: FnMut(Self::Item) -> Option<B>;
-            fn fold<B, F>(self, init: B, f: F) -> B where Self: Sized, F: FnMut(B, Self::Item) -> B;
-            fn for_each<F>(self, f: F) where Self: Sized, F: FnMut(Self::Item);
-            fn ge<I>(self, other: I) -> bool where I: IntoIterator, Self::Item: PartialOrd<I::Item>, Self: Sized;
-            fn gt<I>(self, other: I) -> bool where I: IntoIterator, Self::Item: PartialOrd<I::Item>, Self: Sized;
-            fn last(self) -> Option<Self::Item> where Self: Sized;
-            fn le<I>(self, other: I) -> bool where I: IntoIterator, Self::Item: PartialOrd<I::Item>, Self: Sized;
-            fn lt<I>(self, other: I) -> bool where I: IntoIterator, Self::Item: PartialOrd<I::Item>, Self: Sized;
-            fn max(self) -> Option<Self::Item> where Self: Sized, Self::Item: Ord;
-            fn max_by<F>(self, compare: F) -> Option<Self::Item> where Self: Sized, F: FnMut(&Self::Item, &Self::Item) -> Ordering;
-            fn max_by_key<B: Ord, F>(self, f: F) -> Option<Self::Item> where Self: Sized, F: FnMut(&Self::Item) -> B;
-            fn min(self) -> Option<Self::Item> where Self: Sized, Self::Item: Ord;
-            fn min_by<F>(self, compare: F) -> Option<Self::Item> where Self: Sized, F: FnMut(&Self::Item, &Self::Item) -> Ordering;
-            fn min_by_key<B: Ord, F>(self, f: F) -> Option<Self::Item> where Self: Sized, F: FnMut(&Self::Item) -> B;
-            fn ne<I>(self, other: I) -> bool where I: IntoIterator, Self::Item: PartialEq<I::Item>, Self: Sized;
-            fn nth(&mut self, n: usize) -> Option<Self::Item>;
-            fn partial_cmp<I>(self, other: I) -> Option<Ordering> where I: IntoIterator, Self::Item: PartialOrd<I::Item>, Self: Sized;
-            fn partition<B, F>(self, f: F) -> (B, B) where Self: Sized, B: Default + Extend<Self::Item>, F: FnMut(&Self::Item) -> bool;
-            fn position<P>(&mut self, predicate: P) -> Option<usize> where Self: Sized, P: FnMut(Self::Item) -> bool;
-            fn product<P>(self) -> P where Self: Sized, P: Product<Self::Item>;
-            fn reduce<F>(self, f: F) -> Option<Self::Item> where Self: Sized, F: FnMut(Self::Item, Self::Item) -> Self::Item;
-            fn sum<S>(self) -> S where Self: Sized, S: Sum<Self::Item>;
-        }
-    }
-
-    // for some reason, E == Self::Item cannot be resolved
-    // fn rposition<P>(&mut self, predicate: P) -> Option<usize> where P: FnMut(Self::Item) -> bool, Self: Sized + ExactSizeIterator + DoubleEndedIterator {
-    //     self.0.rposition(predicate)
-    // }
-}
-
-impl<E> ExactSizeIterator for Iter<E> {}
-
-impl<E> DoubleEndedIterator for Iter<E> {
-    fn next_back(&mut self) -> Option<Self::Item> {
-        self.0.next_back()
-    }
-}
-
+/// Trait implementing iterator-like behavior for enums.
+///
+/// Implementing this trait provides the
+/// [`next`], [`prev`], [`rotate_next`], [`rotate_prev`], [`iter`], and [`iter_from`] methods on any enum.
+///
+/// An implementation of this trait describes an *iteration order* of the enum's variants.
+/// An iteration order is simply an ordering of **all** the variants of the enum with each variant
+/// appearing exactly once. Any given implementation of this trait must ensure that all functions
+/// respect the same iteration order.
+///
+/// This trait should only be implemented for enums, if this trait is implemented for a struct or
+/// a union, its requirements are unspecified and the behavior of some of the default implementations
+/// is also unspecified.
+///
+/// Note that this trait currently excludes enums with non-empty (and not effectively unit) tuple or struct
+/// variants due to how the [`next`], [`prev`], [`rotate_next`], and [`rotate_prev`] functions are defined.
+/// This is because any information carried by a variant would be overridden by calling `.next().prev()`,
+/// which would break an invariant. This part of the specification might change in the future.
+///
+/// It is recommended to implement this trait using the provided derive macro like this:
+/// ```rust
+/// use enum_rotate::EnumRotate;
+///
+/// #[derive(EnumRotate, Copy, Clone)]
+/// enum Enum { A, B, C }
+/// ```
+///
+/// Here is a brief overview of the functions in this trait:
+///
+///  - The [`next`] and [`prev`] functions cycle through the variants of the enum.
+///
+///    The implementation must
+///    ensure that
+///    - `x.next().prev() == x` is always true
+///    - `x.prev().next() == x` is always true
+///    - [`next`] and [`prev`] describe the same iteration order as all the other functions
+///
+///  - The [`rotate_next`] and [`rotate_prev`] functions are in-place versions of [`next`] and [`prev`] respectively.
+///    They modify the receiver they operate on and return a copy of the new value.
+///
+///    The implementation must ensure that
+///    - `x.rotate_next(); x.rotate_prev()` will leave `x` unchanged
+///    - `x.rotate_prev(); x.rotate_next()` will leave `x` unchanged
+///    - [`rotate_next`] and [`rotate_prev`] describe the same iteration order as all the other functions
+///
+///  - The [`iter`] function returns an iterator over the variants of the enum.
+///
+///    The implementation must ensure that the iterator returned by [`iter`]
+///    - Returns each variant of the enum **exactly once**
+///    - Describes the same iteration order as all the other functions
+///
+///    No guarantees are made about the precise type of the iterator.
+///
+///  - The [`iter_from`] function returns an iterator over the variants of the enum starting from a given variant.
+///    The implementation must ensure that the iterator returned by [`iter_from`]
+///    - Returns the variant passed to [`iter_from`] as its first element
+///    - Returns each variant of the enum **exactly once**
+///    - Describes the same iteration order as all the other functions
+///
+///     No guarantees are made about the precise type of the iterator
+///
+/// [`next`]: EnumRotate::next
+/// [`prev`]: EnumRotate::prev
+/// [`rotate_next`]: EnumRotate::rotate_next
+/// [`rotate_prev`]: EnumRotate::rotate_prev
+/// [`iter`]: EnumRotate::iter
+/// [`iter_from`]: EnumRotate::iter_from
 pub trait EnumRotate
 where
     Self: Sized + Copy,
 {
+    /// This method returns the **next** variant in the *iteration order* described by this implementation.
+    ///
+    /// Example:
+    /// ```rust
+    /// use enum_rotate::EnumRotate;
+    /// use Enum::*;
+    ///
+    /// #[derive(EnumRotate, Copy, Clone, PartialEq, Debug)]
+    /// enum Enum { A, B, C }
+    ///
+    /// fn main() {
+    ///     assert_eq!(A.next(), B)
+    /// }
+    /// ```
     #[must_use]
     fn next(self) -> Self;
 
+    /// This method returns the **previous** variant in the *iteration order* described by this implementation
     #[must_use]
     fn prev(self) -> Self;
 
+    /// This method assigns the **next** variant in the *iteration order* described by this implementation
+    /// to the receiver and returns the new value
     fn rotate_next(&mut self) -> Self {
         *self = self.next();
         *self
     }
 
+    /// This method assigns the **previous** variant in the *iteration order* described by this implementation
+    /// to the receiver and returns the new value
     fn rotate_prev(&mut self) -> Self {
         *self = self.prev();
         *self
     }
 
-    fn iter() -> Iter<Self>;
+    // TODO: docs
+    fn iter() -> impl Iterator<Item=Self>;
 
-    fn iter_from(self) -> Iter<Self>;
+    // TODO: docs
+    fn iter_from(self) -> impl Iterator<Item=Self> {
+        let self_discriminant = discriminant(&self);
+        successors(Some(self), move |var| {
+            match var.next() {
+                // Compare discriminants because PartialEq is not guaranteed to be implemented.
+                // If Self is not an enum, the behavior of this method is unspecified
+                next if discriminant(&next) == self_discriminant => None,
+                next => Some(next),
+            }
+        })
+    }
 }
