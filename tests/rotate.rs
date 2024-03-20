@@ -1,4 +1,5 @@
 use enum_rotate::EnumRotate;
+use Test::*;
 
 #[derive(EnumRotate, Copy, Clone, Eq, PartialEq, Debug)]
 enum Test {
@@ -12,47 +13,47 @@ enum Void {}
 
 #[test]
 fn test_next_prev() {
-    assert_eq!(Test::A.next(), Test::B);
-    assert_eq!(Test::B.next(), Test::C);
-    assert_eq!(Test::C.next(), Test::A);
+    assert_eq!(A.next(), B);
+    assert_eq!(B.next(), C);
+    assert_eq!(C.next(), A);
 
-    assert_eq!(Test::A.prev(), Test::C);
-    assert_eq!(Test::B.prev(), Test::A);
-    assert_eq!(Test::C.prev(), Test::B);
+    assert_eq!(A.prev(), C);
+    assert_eq!(B.prev(), A);
+    assert_eq!(C.prev(), B);
 }
 
 #[test]
 fn test_rotate() {
-    let mut x = Test::A;
-    assert_eq!(x.rotate_next(), Test::B);
-    assert_eq!(x, Test::B);
+    let mut x = A;
+    assert_eq!(x.rotate_next(), B);
+    assert_eq!(x, B);
 
-    let mut x = Test::B;
-    assert_eq!(x.rotate_next(), Test::C);
-    assert_eq!(x, Test::C);
+    let mut x = B;
+    assert_eq!(x.rotate_next(), C);
+    assert_eq!(x, C);
 
-    let mut x = Test::C;
-    assert_eq!(x.rotate_next(), Test::A);
-    assert_eq!(x, Test::A);
+    let mut x = C;
+    assert_eq!(x.rotate_next(), A);
+    assert_eq!(x, A);
 
-    let mut x = Test::A;
-    assert_eq!(x.rotate_prev(), Test::C);
-    assert_eq!(x, Test::C);
+    let mut x = A;
+    assert_eq!(x.rotate_prev(), C);
+    assert_eq!(x, C);
 
-    let mut x = Test::B;
-    assert_eq!(x.rotate_prev(), Test::A);
-    assert_eq!(x, Test::A);
+    let mut x = B;
+    assert_eq!(x.rotate_prev(), A);
+    assert_eq!(x, A);
 
-    let mut x = Test::C;
-    assert_eq!(x.rotate_prev(), Test::B);
-    assert_eq!(x, Test::B);
+    let mut x = C;
+    assert_eq!(x.rotate_prev(), B);
+    assert_eq!(x, B);
 }
 
 #[test]
 fn test_iter() {
     assert_eq!(
         Test::iter().collect::<Vec<_>>(),
-        vec![Test::A, Test::B, Test::C]
+        vec![A, B, C]
     );
     assert_eq!(Void::iter().collect::<Vec<_>>(), vec![]);
 }
@@ -60,15 +61,15 @@ fn test_iter() {
 #[test]
 fn test_iter_from() {
     assert_eq!(
-        Test::A.iter_from().collect::<Vec<_>>(),
-        vec![Test::A, Test::B, Test::C]
+        A.iter_from().collect::<Vec<_>>(),
+        vec![A, B, C]
     );
     assert_eq!(
-        Test::B.iter_from().collect::<Vec<_>>(),
-        vec![Test::B, Test::C, Test::A]
+        B.iter_from().collect::<Vec<_>>(),
+        vec![B, C, A]
     );
     assert_eq!(
-        Test::C.iter_from().collect::<Vec<_>>(),
-        vec![Test::C, Test::A, Test::B]
+        C.iter_from().collect::<Vec<_>>(),
+        vec![C, A, B]
     );
 }
