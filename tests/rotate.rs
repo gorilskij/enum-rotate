@@ -2,7 +2,9 @@ use enum_rotate::EnumRotate;
 
 #[derive(EnumRotate, Copy, Clone, Eq, PartialEq, Debug)]
 enum Test {
-    A, B, C
+    A,
+    B,
+    C,
 }
 
 #[derive(EnumRotate, Copy, Clone, Eq, PartialEq, Debug)]
@@ -48,13 +50,25 @@ fn test_rotate() {
 
 #[test]
 fn test_iter() {
-    assert_eq!(Test::iter().collect::<Vec<_>>(), vec![Test::A, Test::B, Test::C]);
+    assert_eq!(
+        Test::iter().collect::<Vec<_>>(),
+        vec![Test::A, Test::B, Test::C]
+    );
     assert_eq!(Void::iter().collect::<Vec<_>>(), vec![]);
 }
 
 #[test]
 fn test_iter_from() {
-    assert_eq!(Test::A.iter_from().collect::<Vec<_>>(), vec![Test::A, Test::B, Test::C]);
-    assert_eq!(Test::B.iter_from().collect::<Vec<_>>(), vec![Test::B, Test::C, Test::A]);
-    assert_eq!(Test::C.iter_from().collect::<Vec<_>>(), vec![Test::C, Test::A, Test::B]);
+    assert_eq!(
+        Test::A.iter_from().collect::<Vec<_>>(),
+        vec![Test::A, Test::B, Test::C]
+    );
+    assert_eq!(
+        Test::B.iter_from().collect::<Vec<_>>(),
+        vec![Test::B, Test::C, Test::A]
+    );
+    assert_eq!(
+        Test::C.iter_from().collect::<Vec<_>>(),
+        vec![Test::C, Test::A, Test::B]
+    );
 }

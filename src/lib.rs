@@ -1,7 +1,7 @@
 extern crate self as enum_rotate;
 
-use std::vec;
 pub use derive_enum_rotate::EnumRotate;
+use std::vec;
 
 pub struct Iter<E>(vec::IntoIter<E>);
 
@@ -19,7 +19,10 @@ impl<E> Iterator for Iter<E> {
     }
 }
 
-pub trait EnumRotate where Self: Sized + Copy {
+pub trait EnumRotate
+where
+    Self: Sized + Copy,
+{
     #[must_use]
     fn next(self) -> Self;
 
