@@ -111,10 +111,10 @@ where
     }
 
     // TODO: docs
-    fn iter() -> impl Iterator<Item=Self>;
+    fn iter() -> impl Iterator<Item = Self>;
 
     // TODO: docs
-    fn iter_from(self) -> impl Iterator<Item=Self> {
+    fn iter_from(self) -> impl Iterator<Item = Self> {
         let self_discriminant = discriminant(&self);
         successors(Some(self), move |var| {
             match var.next() {
