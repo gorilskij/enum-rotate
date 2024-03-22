@@ -5,4 +5,7 @@ edition = "2021"
 
 [dependencies]
 derive_enum_rotate = { path = "../derive_enum_rotate" }
-paste = "1.0"
+
+[dev-dependencies]
+paste = "1.0.14"
+#compiletest_rs = { version = "0.10.2", features = [ "rustc" ] }
