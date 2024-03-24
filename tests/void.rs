@@ -1,9 +1,16 @@
 use enum_rotate::EnumRotate;
 
-#[derive(EnumRotate, Copy, Clone, Eq, PartialEq, Debug)]
+mod utils;
+
+#[derive(EnumRotate, Debug)]
 enum Void {}
 
-#[test]
-fn test_iter() {
-    assert_eq!(Void::iter().collect::<Vec<_>>(), vec![]);
+// #[test]
+// fn test_iter() {
+//     assert!(Void::iter().collect::<Vec<_>>().is_empty());
+// }
+
+test_iter_iter_from! {
+    Void;
+    [];
 }

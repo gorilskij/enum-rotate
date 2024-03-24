@@ -31,3 +31,21 @@ fn main() {
     );
 }
 ```
+
+It is also possible to specify a custom *iteration order* for the enum variants.
+
+```rust
+use enum_rotate::EnumRotate;
+use Enum::*;
+
+#[derive(EnumRotate, Copy, Clone, PartialEq)]
+#[iteration_order(B, A, C)]
+enum Enum { A, B, C }
+
+fn main() {
+    assert_eq!(
+        Enum::iter().collect::<Vec<_>>(),
+        vec![B, A, C],
+    );
+}
+```

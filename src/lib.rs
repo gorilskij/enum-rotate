@@ -1,8 +1,6 @@
 extern crate self as enum_rotate;
 
 pub use derive_enum_rotate::EnumRotate;
-use std::iter::successors;
-use std::mem::discriminant;
 
 /// Trait implementing iterator-like behavior for enums.
 ///
@@ -73,7 +71,7 @@ use std::mem::discriminant;
 /// [`iter_from`]: EnumRotate::iter_from
 pub trait EnumRotate
 where
-    Self: Sized + Copy,
+    Self: Sized,
 {
     /// This method returns the **next** variant in the *iteration order* described by this implementation.
     ///
@@ -90,39 +88,29 @@ where
     /// }
     /// ```
     #[must_use]
-    fn next(self) -> Self;
+    fn next(&self) -> Self;
 
     /// This method returns the **previous** variant in the *iteration order* described by this implementation
     #[must_use]
-    fn prev(self) -> Self;
+    fn prev(&self) -> Self;
 
     /// This method assigns the **next** variant in the *iteration order* described by this implementation
     /// to the receiver and returns the new value
-    fn rotate_next(&mut self) -> Self {
+    fn rotate_next(&mut self) -> &Self {
         *self = self.next();
-        *self
+        self
     }
 
     /// This method assigns the **previous** variant in the *iteration order* described by this implementation
     /// to the receiver and returns the new value
-    fn rotate_prev(&mut self) -> Self {
+    fn rotate_prev(&mut self) -> &Self {
         *self = self.prev();
-        *self
+        self
     }
 
     // TODO: docs
     fn iter() -> impl Iterator<Item = Self>;
 
     // TODO: docs
-    fn iter_from(self) -> impl Iterator<Item = Self> {
-        let self_discriminant = discriminant(&self);
-        successors(Some(self), move |var| {
-            match var.next() {
-                // Compare discriminants because PartialEq is not guaranteed to be implemented.
-                // If Self is not an enum, the behavior of this method is unspecified
-                next if discriminant(&next) == self_discriminant => None,
-                next => Some(next),
-            }
-        })
-    }
+    fn iter_from(&self) -> impl Iterator<Item = Self>;
 }
