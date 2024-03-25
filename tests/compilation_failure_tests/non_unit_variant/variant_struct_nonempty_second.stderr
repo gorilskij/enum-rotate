@@ -1,0 +1,13 @@
+error: Variant B is not a unit variant, all variants must be unit variants to derive EnumRotate
+ --> tests/compilation_failure_tests/non_unit_variant/variant_struct_nonempty_second.rs:6:5
+  |
+6 | /     B {
+7 | |         field: usize,
+8 | |     },
+  | |_____^
+
+error[E0601]: `main` function not found in crate `$CRATE`
+  --> tests/compilation_failure_tests/non_unit_variant/variant_struct_nonempty_second.rs:10:2
+   |
+10 | }
+   |  ^ consider adding a `main` function to `$DIR/tests/compilation_failure_tests/non_unit_variant/variant_struct_nonempty_second.rs`

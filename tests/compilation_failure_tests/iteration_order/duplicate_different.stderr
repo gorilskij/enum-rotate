@@ -1,0 +1,11 @@
+error: Duplicate "iteration_order" attribute, please specify at most one iteration order
+ --> tests/compilation_failure_tests/iteration_order/duplicate_different.rs:5:1
+  |
+5 | #[iteration_order(C, B, A)]
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0601]: `main` function not found in crate `$CRATE`
+ --> tests/compilation_failure_tests/iteration_order/duplicate_different.rs:8:2
+  |
+8 | }
+  |  ^ consider adding a `main` function to `$DIR/tests/compilation_failure_tests/iteration_order/duplicate_different.rs`

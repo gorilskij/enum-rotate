@@ -1,0 +1,11 @@
+error: Struct Struct is not an enum, EnumRotate can only be derived for enums
+ --> tests/compilation_failure_tests/non_enum/unit_struct.rs:4:1
+  |
+4 | struct Struct;
+  | ^^^^^^^^^^^^^^
+
+error[E0601]: `main` function not found in crate `$CRATE`
+ --> tests/compilation_failure_tests/non_enum/unit_struct.rs:4:15
+  |
+4 | struct Struct;
+  |               ^ consider adding a `main` function to `$DIR/tests/compilation_failure_tests/non_enum/unit_struct.rs`

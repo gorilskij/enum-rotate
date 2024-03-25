@@ -1,0 +1,11 @@
+error: Expected identifier
+ --> tests/compilation_failure_tests/iteration_order/malformed_non_ident_dash.rs:4:19
+  |
+4 | #[iteration_order(-)]
+  |                   ^
+
+error[E0601]: `main` function not found in crate `$CRATE`
+ --> tests/compilation_failure_tests/iteration_order/malformed_non_ident_dash.rs:7:2
+  |
+7 | }
+  |  ^ consider adding a `main` function to `$DIR/tests/compilation_failure_tests/iteration_order/malformed_non_ident_dash.rs`

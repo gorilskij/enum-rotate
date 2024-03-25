@@ -1,0 +1,14 @@
+error: Union Union is not an enum, EnumRotate can only be derived for enums
+ --> tests/compilation_failure_tests/non_enum/union_nonempty.rs:4:1
+  |
+4 | / union Union {
+5 | |     field1: usize,
+6 | |     field2: u8,
+7 | | }
+  | |_^
+
+error[E0601]: `main` function not found in crate `$CRATE`
+ --> tests/compilation_failure_tests/non_enum/union_nonempty.rs:7:2
+  |
+7 | }
+  |  ^ consider adding a `main` function to `$DIR/tests/compilation_failure_tests/non_enum/union_nonempty.rs`

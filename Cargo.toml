@@ -8,4 +8,5 @@ derive_enum_rotate = { path = "../derive_enum_rotate" }
 
 [dev-dependencies]
 paste = "1.0.14"
+trybuild = "1.0"
 #compiletest_rs = { version = "0.10.2", features = [ "rustc" ] }

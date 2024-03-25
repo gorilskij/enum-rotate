@@ -26,7 +26,7 @@ macro_rules! test_iter_iter_from {
     ($enm:ident; [$( $x:ident ),*]; $( $v:ident: [$( $y:ident ),*]; )*) => {
         #[test]
         fn test_iter() {
-            // Silence warning for the empty enum case
+            // Silence warning for the wrong_length_empty enum case
             #[allow(unused_mut)]
             let mut vec: Vec<_> = $enm::iter().collect();
             $(

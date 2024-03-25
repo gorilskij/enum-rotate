@@ -1,0 +1,14 @@
+error: Expected 3 items in the iteration order but got 4
+ --> tests/compilation_failure_tests/iteration_order/wrong_length_long.rs:4:18
+  |
+4 | #[iteration_order(A, B, C, A)]
+  |                  ^^^^^^^^^^^^
+  |
+  = note: Enum `Enum` has 3 variants
+  = note: Each variant should appear exactly once in the iteration order
+
+error[E0601]: `main` function not found in crate `$CRATE`
+ --> tests/compilation_failure_tests/iteration_order/wrong_length_long.rs:7:2
+  |
+7 | }
+  |  ^ consider adding a `main` function to `$DIR/tests/compilation_failure_tests/iteration_order/wrong_length_long.rs`

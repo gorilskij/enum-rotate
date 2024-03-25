@@ -1,0 +1,13 @@
+error: Variant C not covered
+ --> tests/compilation_failure_tests/iteration_order/repeated_variant.rs:4:18
+  |
+4 | #[iteration_order(A, B, A)]
+  |                  ^^^^^^^^^
+  |
+  = note: Each variant of `Enum` should appear exactly once in the iteration order
+
+error[E0601]: `main` function not found in crate `$CRATE`
+ --> tests/compilation_failure_tests/iteration_order/repeated_variant.rs:7:2
+  |
+7 | }
+  |  ^ consider adding a `main` function to `$DIR/tests/compilation_failure_tests/iteration_order/repeated_variant.rs`

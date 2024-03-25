@@ -1,0 +1,13 @@
+error: Invalid variant for enum `Enum`: D
+ --> tests/compilation_failure_tests/iteration_order/invalid_variant.rs:4:18
+  |
+4 | #[iteration_order(A, B, D)]
+  |                  ^^^^^^^^^
+  |
+  = note: The iteration order can only contain variants of `Enum`
+
+error[E0601]: `main` function not found in crate `$CRATE`
+ --> tests/compilation_failure_tests/iteration_order/invalid_variant.rs:7:2
+  |
+7 | }
+  |  ^ consider adding a `main` function to `$DIR/tests/compilation_failure_tests/iteration_order/invalid_variant.rs`
