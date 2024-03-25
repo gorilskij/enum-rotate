@@ -5,7 +5,11 @@
 
 Treat your enums as iterators.
 
-This crate provides the `EnumRotate` trait along with the accompanying derive macro.
+This crate provides the `EnumRotate` trait along with the accompanying derive macro allowing you to
+
+- Get the next and previous variant for any variant of an enum
+- Iterate over variants of an enum in a predefined (and customizable) order
+- Iterate over variants of an enum starting from a particular variant
 
 ## Usage
 
@@ -13,7 +17,7 @@ This crate provides the `EnumRotate` trait along with the accompanying derive ma
 use enum_rotate::EnumRotate;
 use Enum::*;
 
-#[derive(EnumRotate, Copy, Clone, PartialEq)]
+#[derive(EnumRotate, PartialEq)]
 enum Enum { A, B, C }
 
 fn main() {
@@ -38,7 +42,7 @@ It is also possible to specify a custom *iteration order* for the enum variants.
 use enum_rotate::EnumRotate;
 use Enum::*;
 
-#[derive(EnumRotate, Copy, Clone, PartialEq)]
+#[derive(EnumRotate, PartialEq)]
 #[iteration_order(B, A, C)]
 enum Enum { A, B, C }
 
